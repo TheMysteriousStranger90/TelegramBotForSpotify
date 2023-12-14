@@ -2,7 +2,6 @@
 
 namespace TelegramBotForSpotify.Services;
 
-// Класс для взаимодействия с API Spotify
 public class SpotifyService
 {
     private SpotifyClient _spotify;
@@ -18,12 +17,92 @@ public class SpotifyService
 
     public async Task<FullTrack> GetCurrentTrack()
     {
-        var playback = await _spotify.Player.GetCurrentPlayback();
-        if (playback?.Item is FullTrack track)
+        try
         {
-            return track;
+            var playback = await _spotify.Player.GetCurrentPlayback();
+            if (playback?.Item is FullTrack track)
+            {
+                return track;
+            }
+            else
+            {
+                return null;
+            }
         }
-        else
+        catch (APIException e)
+        {
+            return null;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public async Task<List<FullAlbum>> GetAllFavoriteAlbums()
+    {
+        try
+        {
+            var allAlbums = new List<FullAlbum>();
+
+            await foreach (var savedAlbum in _spotify.Paginate(await _spotify.Library.GetAlbums()))
+            {
+                allAlbums.Add(savedAlbum.Album);
+            }
+
+            return allAlbums;
+        }
+        catch (APIException e)
+        {
+            return null;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public async Task<List<FullPlaylist>> GetAllFavoritePlaylists(string userId)
+    {
+        try
+        {
+            var allPlaylists = new List<FullPlaylist>();
+
+            await foreach (var playlist in _spotify.Paginate(await _spotify.Playlists.GetUsers(userId)))
+            {
+                allPlaylists.Add(playlist);
+            }
+
+            return allPlaylists;
+        }
+        catch (APIException e)
+        {
+            return null;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public async Task<List<SavedTrack>> GetAllFavoriteTracks()
+    {
+        try
+        {
+            var allTracks = new List<SavedTrack>();
+
+            await foreach (var track in _spotify.Paginate(await _spotify.Library.GetTracks()))
+            {
+                allTracks.Add(track);
+            }
+
+            return allTracks;
+        }
+        catch (APIException e)
+        {
+            return null;
+        }
+        catch (Exception e)
         {
             return null;
         }
