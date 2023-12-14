@@ -26,6 +26,7 @@ builder.Services.AddSingleton(provider =>
     var token = authService.GetTokenAsync().GetAwaiter().GetResult();
     return new SpotifyClient(token);
 });
+
 builder.Services.AddSingleton<ISpotifyAlbumService, SpotifyAlbumService>();
 builder.Services.AddSingleton<ISpotifyPlaylistService, SpotifyPlaylistService>();
 builder.Services.AddSingleton<ISpotifyTrackService, SpotifyTrackService>();
@@ -39,7 +40,6 @@ builder.Services.AddSingleton<FavoriteTracksCommand>();
 builder.Services.AddSingleton<PlaylistInfoCommand>();
 
 // Add CommandHandler to the services
-builder.Services.AddSingleton<SpotifyClient>();
 
 builder.Services.AddSingleton<AuthorizeManager>();
 
