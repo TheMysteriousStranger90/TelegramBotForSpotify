@@ -1,5 +1,6 @@
 ﻿using TelegramBotForSpotify.Auth;
 using TelegramBotForSpotify.Commands;
+using TelegramBotForSpotify.Interfaces;
 using TelegramBotForSpotify.Services;
 
 namespace TelegramBotForSpotify.Helpers;
@@ -7,9 +8,9 @@ namespace TelegramBotForSpotify.Helpers;
 public class Bot
 {
     private readonly AuthorizeManager _authorizeManager;
-    private readonly TelegramService _telegramService;
+    private readonly ITelegramService _telegramService;
 
-    public Bot(AuthorizeManager authorizeManager, TelegramService telegramService)
+    public Bot(AuthorizeManager authorizeManager, ITelegramService telegramService)
     {
         _authorizeManager = authorizeManager;
         _telegramService = telegramService;

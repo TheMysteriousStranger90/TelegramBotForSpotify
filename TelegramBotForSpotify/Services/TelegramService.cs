@@ -1,15 +1,19 @@
-﻿using Telegram.Bot;
+﻿using Microsoft.Extensions.Options;
+using Telegram.Bot;
+using TelegramBotForSpotify.Auth;
 using TelegramBotForSpotify.Interfaces;
 
 namespace TelegramBotForSpotify.Services;
 
 public class TelegramService : ITelegramService
 {
+    private readonly string _token;
     private readonly TelegramBotClient _botClient;
 
-    public TelegramService(string botToken)
+    public TelegramService(IOptions<TelegramSettings> settings)
     {
-        _botClient = new TelegramBotClient(botToken);
+        _token = settings.Value.Token;
+        _botClient = new TelegramBotClient(_token);
     }
 
     public async Task SendMessage(string chatId, string text)

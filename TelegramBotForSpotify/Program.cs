@@ -1,4 +1,7 @@
+using SpotifyAPI.Web;
 using TelegramBotForSpotify.Auth;
+using TelegramBotForSpotify.Commands;
+using TelegramBotForSpotify.Helpers;
 using TelegramBotForSpotify.Interfaces;
 using TelegramBotForSpotify.Services;
 
@@ -21,7 +24,27 @@ builder.Services.AddSingleton<ISpotifyAlbumService, SpotifyAlbumService>();
 builder.Services.AddSingleton<ISpotifyPlaylistService, SpotifyPlaylistService>();
 builder.Services.AddSingleton<ISpotifyTrackService, SpotifyTrackService>();
 
+// Add commands to the services
+builder.Services.AddSingleton<CurrentTrackCommand>();
+builder.Services.AddSingleton<FavoriteAlbumsStatsCommand>();
+builder.Services.AddSingleton<FavoriteTracksCommand>();
+builder.Services.AddSingleton<PlaylistInfoCommand>();
+
+// Add CommandHandler to the services
+builder.Services.AddSingleton<SpotifyClient>();
+
+builder.Services.AddSingleton<AuthorizeManager>();
+
+builder.Services.AddSingleton<CommandHandler>();
+
+builder.Services.AddSingleton<Bot>();
+
 var app = builder.Build();
+
+
+// Get the Bot from the services and start it
+var bot = app.Services.GetRequiredService<Bot>();
+await bot.Start();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

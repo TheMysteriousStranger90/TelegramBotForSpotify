@@ -1,4 +1,5 @@
-﻿using SpotifyAPI.Web;
+﻿using Microsoft.Extensions.Options;
+using SpotifyAPI.Web;
 using TelegramBotForSpotify.Auth;
 using TelegramBotForSpotify.Interfaces;
 
@@ -6,12 +7,11 @@ namespace TelegramBotForSpotify.Services;
 
 public class SpotifyAuthorizationService : ISpotifyAuthorizationService
 {
-    private SpotifyClient _spotify;
     private readonly SpotifySettings _spotifySettings;
-
-    public SpotifyAuthorizationService(SpotifySettings spotifySettings)
+    private SpotifyClient _spotify;
+    public SpotifyAuthorizationService(IOptions<SpotifySettings> spotifySettings)
     {
-        _spotifySettings = spotifySettings;
+        _spotifySettings = spotifySettings.Value;
     }
 
     public async Task Authorize()
