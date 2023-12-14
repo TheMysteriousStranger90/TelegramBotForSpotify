@@ -1,4 +1,5 @@
-﻿using Telegram.Bot.Types;
+﻿using SpotifyAPI.Web;
+using Telegram.Bot.Types;
 using TelegramBotForSpotify.Interfaces;
 
 namespace TelegramBotForSpotify.Commands;
@@ -10,18 +11,22 @@ public class CommandHandler
     private readonly FavoriteAlbumsStatsCommand _favoriteAlbumsStatsCommand;
     private readonly FavoriteTracksCommand _favoriteTracksCommand;
     private readonly PlaylistInfoCommand _playlistInfoCommand;
+    private readonly ISpotifyClientFactory _spotifyClientFactory;
 
-    public CommandHandler(ITelegramService telegramService, CurrentTrackCommand currentTrackCommand, FavoriteAlbumsStatsCommand favoriteAlbumsStatsCommand, FavoriteTracksCommand favoriteTracksCommand, PlaylistInfoCommand playlistInfoCommand)
+    public CommandHandler(ISpotifyClientFactory spotifyClientFactory, ITelegramService telegramService, CurrentTrackCommand currentTrackCommand, FavoriteAlbumsStatsCommand favoriteAlbumsStatsCommand, FavoriteTracksCommand favoriteTracksCommand, PlaylistInfoCommand playlistInfoCommand)
     {
         _telegramService = telegramService;
         _currentTrackCommand = currentTrackCommand;
         _favoriteAlbumsStatsCommand = favoriteAlbumsStatsCommand;
         _favoriteTracksCommand = favoriteTracksCommand;
         _playlistInfoCommand = playlistInfoCommand;
+        _spotifyClientFactory = spotifyClientFactory;
     }
 
     public async Task HandleCommand(Message message)
     {
+        var spotifyClient = await _spotifyClientFactory.CreateSpotifyClientAsync();
+        
         string command = message.Text.Split(' ')[0];
 
         switch (command)

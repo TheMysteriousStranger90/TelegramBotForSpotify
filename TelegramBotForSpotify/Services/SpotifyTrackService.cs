@@ -5,9 +5,9 @@ namespace TelegramBotForSpotify.Services;
 
 public class SpotifyTrackService : ISpotifyTrackService
 {
-    private readonly SpotifyClient _spotify;
+    private readonly ISpotifyClientFactory _spotify;
 
-    public SpotifyTrackService(SpotifyClient spotify)
+    public SpotifyTrackService(ISpotifyClientFactory spotify)
     {
         _spotify = spotify;
     }
@@ -16,7 +16,8 @@ public class SpotifyTrackService : ISpotifyTrackService
     {
         try
         {
-            var playback = await _spotify.Player.GetCurrentPlayback();
+            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
+            var playback = await spotifyClient.Player.GetCurrentPlayback();
             if (playback?.Item is FullTrack track)
             {
                 return track;
@@ -29,7 +30,7 @@ public class SpotifyTrackService : ISpotifyTrackService
         catch (APIException e)
         {
             Console.WriteLine(e.ToString());
-            throw; 
+            throw;
         }
         catch (Exception e)
         {
@@ -42,9 +43,10 @@ public class SpotifyTrackService : ISpotifyTrackService
     {
         try
         {
+            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
             var allTracks = new List<SavedTrack>();
 
-            await foreach (var track in _spotify.Paginate(await _spotify.Library.GetTracks()))
+            await foreach (var track in spotifyClient.Paginate(await spotifyClient.Library.GetTracks()))
             {
                 allTracks.Add(track);
             }
@@ -54,7 +56,7 @@ public class SpotifyTrackService : ISpotifyTrackService
         catch (APIException e)
         {
             Console.WriteLine(e.ToString());
-            throw; 
+            throw;
         }
         catch (Exception e)
         {

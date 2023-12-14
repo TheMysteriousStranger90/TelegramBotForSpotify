@@ -20,9 +20,17 @@ builder.Services.Configure<SpotifySettings>(builder.Configuration.GetSection("Sp
 builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
 builder.Services.AddSingleton<ITelegramService, TelegramService>();
 builder.Services.AddSingleton<ISpotifyAuthorizationService, SpotifyAuthorizationService>();
+builder.Services.AddSingleton(provider =>
+{
+    var authService = provider.GetRequiredService<ISpotifyAuthorizationService>();
+    var token = authService.GetTokenAsync().GetAwaiter().GetResult();
+    return new SpotifyClient(token);
+});
 builder.Services.AddSingleton<ISpotifyAlbumService, SpotifyAlbumService>();
 builder.Services.AddSingleton<ISpotifyPlaylistService, SpotifyPlaylistService>();
 builder.Services.AddSingleton<ISpotifyTrackService, SpotifyTrackService>();
+
+builder.Services.AddSingleton<ISpotifyClientFactory, SpotifyClientFactory>();
 
 // Add commands to the services
 builder.Services.AddSingleton<CurrentTrackCommand>();

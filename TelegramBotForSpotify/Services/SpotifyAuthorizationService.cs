@@ -33,6 +33,15 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
 
         return request.ToUri().ToString();
     }
+    
+    public async Task<string> GetTokenAsync()
+    {
+        var config = SpotifyClientConfig.CreateDefault();
+        var request = new ClientCredentialsRequest(_spotifySettings.ClientId, _spotifySettings.ClientSecret);
+        var response = await new OAuthClient(config).RequestToken(request);
+
+        return response.AccessToken;
+    }
 
     public SpotifyClient GetSpotifyClient()
     {

@@ -6,9 +6,9 @@ namespace TelegramBotForSpotify.Commands;
 public class CurrentTrackCommand : ICommand
 {
     private readonly ISpotifyTrackService _spotifyTrackService;
-    private readonly TelegramService _telegramService;
+    private readonly ITelegramService _telegramService;
 
-    public CurrentTrackCommand(ISpotifyTrackService spotifyTrackService, TelegramService telegramService)
+    public CurrentTrackCommand(ISpotifyTrackService spotifyTrackService, ITelegramService telegramService)
     {
         _spotifyTrackService = spotifyTrackService;
         _telegramService = telegramService;

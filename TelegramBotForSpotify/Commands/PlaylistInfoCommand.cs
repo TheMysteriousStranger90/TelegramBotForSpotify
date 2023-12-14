@@ -6,10 +6,10 @@ namespace TelegramBotForSpotify.Commands;
 public class PlaylistInfoCommand : ICommand
 {
     private readonly ISpotifyPlaylistService _spotifyPlaylistService;
-    private readonly TelegramService _telegramService;
+    private readonly ITelegramService _telegramService;
     private readonly string _userId;
 
-    public PlaylistInfoCommand(ISpotifyPlaylistService spotifyPlaylistService, TelegramService telegramService, string userId)
+    public PlaylistInfoCommand(ISpotifyPlaylistService spotifyPlaylistService, ITelegramService telegramService, string userId)
     {
         _spotifyPlaylistService = spotifyPlaylistService;
         _telegramService = telegramService;
