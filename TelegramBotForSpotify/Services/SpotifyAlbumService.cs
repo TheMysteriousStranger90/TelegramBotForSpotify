@@ -5,9 +5,9 @@ namespace TelegramBotForSpotify.Services;
 
 public class SpotifyAlbumService : ISpotifyAlbumService
 {
-    private readonly SpotifyClient _spotify;
+    private readonly ISpotifyClientFactory _spotify;
 
-    public SpotifyAlbumService(SpotifyClient spotify)
+    public SpotifyAlbumService(ISpotifyClientFactory spotify)
     {
         _spotify = spotify;
     }
@@ -16,9 +16,10 @@ public class SpotifyAlbumService : ISpotifyAlbumService
     {
         try
         {
+            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
             var allAlbums = new List<SavedAlbum>();
 
-            await foreach (var album in _spotify.Paginate(await _spotify.Library.GetAlbums()))
+            await foreach (var album in spotifyClient.Paginate(await spotifyClient.Library.GetAlbums()))
             {
                 allAlbums.Add(album);
             }
@@ -28,7 +29,7 @@ public class SpotifyAlbumService : ISpotifyAlbumService
         catch (APIException e)
         {
             Console.WriteLine(e.ToString());
-            throw; 
+            throw;
         }
         catch (Exception e)
         {
