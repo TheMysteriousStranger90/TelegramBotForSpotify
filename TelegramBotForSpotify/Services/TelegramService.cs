@@ -1,25 +1,15 @@
 ﻿using Telegram.Bot;
+using TelegramBotForSpotify.Interfaces;
 
 namespace TelegramBotForSpotify.Services;
 
-public class TelegramService
+public class TelegramService : ITelegramService
 {
-    private static TelegramService instance = null;
-    private readonly ITelegramBotClient _botClient;
+    private readonly TelegramBotClient _botClient;
 
-    private TelegramService(string botToken)
+    public TelegramService(string botToken)
     {
         _botClient = new TelegramBotClient(botToken);
-    }
-
-    public static TelegramService Instance(string botToken)
-    {
-        if (instance == null)
-        {
-            instance = new TelegramService(botToken);
-        }
-
-        return instance;
     }
 
     public async Task SendMessage(string chatId, string text)

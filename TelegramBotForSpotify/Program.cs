@@ -1,7 +1,25 @@
+using TelegramBotForSpotify.Auth;
+using TelegramBotForSpotify.Interfaces;
+using TelegramBotForSpotify.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+// Add configuration
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+// Add Spotify and Telegram services
+builder.Services.Configure<SpotifySettings>(builder.Configuration.GetSection("Spotify"));
+builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
+builder.Services.AddSingleton<ITelegramService, TelegramService>();
+builder.Services.AddSingleton<ISpotifyAuthorizationService, SpotifyAuthorizationService>();
+builder.Services.AddSingleton<ISpotifyAlbumService, SpotifyAlbumService>();
+builder.Services.AddSingleton<ISpotifyPlaylistService, SpotifyPlaylistService>();
+builder.Services.AddSingleton<ISpotifyTrackService, SpotifyTrackService>();
 
 var app = builder.Build();
 

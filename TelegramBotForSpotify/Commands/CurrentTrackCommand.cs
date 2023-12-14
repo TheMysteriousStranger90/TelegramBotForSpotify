@@ -5,18 +5,18 @@ namespace TelegramBotForSpotify.Commands;
 
 public class CurrentTrackCommand : ICommand
 {
-    private readonly SpotifyService _spotifyService;
+    private readonly ISpotifyTrackService _spotifyTrackService;
     private readonly TelegramService _telegramService;
 
-    public CurrentTrackCommand(SpotifyService spotifyService, string botToken)
+    public CurrentTrackCommand(ISpotifyTrackService spotifyTrackService, TelegramService telegramService)
     {
-        _spotifyService = spotifyService;
-        _telegramService = TelegramService.Instance(botToken);
+        _spotifyTrackService = spotifyTrackService;
+        _telegramService = telegramService;
     }
 
-    public async void Execute()
+    public async Task Execute()
     {
-        var track = await _spotifyService.GetCurrentTrack();
+        var track = await _spotifyTrackService.GetCurrentTrack();
         if (track != null)
         {
             var message = $"Now playing: {track.Name} by {track.Artists[0].Name}";

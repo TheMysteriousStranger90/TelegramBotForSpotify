@@ -5,23 +5,23 @@ namespace TelegramBotForSpotify.Commands;
 
 public class PlaylistInfoCommand : ICommand
 {
-    private readonly SpotifyService _spotifyService;
+    private readonly ISpotifyPlaylistService _spotifyPlaylistService;
     private readonly TelegramService _telegramService;
     private readonly string _userId;
 
-    public PlaylistInfoCommand(SpotifyService spotifyService, string botToken, string userId)
+    public PlaylistInfoCommand(ISpotifyPlaylistService spotifyPlaylistService, TelegramService telegramService, string userId)
     {
-        _spotifyService = spotifyService;
-        _telegramService = TelegramService.Instance(botToken);
+        _spotifyPlaylistService = spotifyPlaylistService;
+        _telegramService = telegramService;
         _userId = userId;
     }
 
-    public async void Execute()
+    public async Task Execute()
     {
-        var allPlaylists = await _spotifyService.GetAllFavoritePlaylists(_userId);
+        var allPlaylists = await _spotifyPlaylistService.GetAllFavoritePlaylists(_userId);
         foreach (var playlistInfo in allPlaylists)
         {
-            var message = $"Playlist: {playlistInfo.Name}\nTracks: {playlistInfo.Tracks.Total}\nDescription: {playlistInfo.Description}";
+            var message = $"Playlist: {playlistInfo.Name}\nTracks: {playlistInfo.Tracks.Total}";
             await _telegramService.SendMessage(chatId: "your_chat_id", text: message);
             await Task.Delay(1000);
         }
