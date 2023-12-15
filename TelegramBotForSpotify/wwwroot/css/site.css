@@ -1,15 +1,13 @@
 html {
   font-size: 14px;
+  font-family: Arial, sans-serif;
+  background-color: #1ed760;
 }
 
 @media (min-width: 768px) {
   html {
     font-size: 16px;
   }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
@@ -19,4 +17,39 @@ html {
 
 body {
   margin-bottom: 60px;
+  color: #333;
+}
+
+.navbar {
+  background-color: #292929 !important;
+}
+
+.navbar-brand, .nav-link {
+  color: #318fd3 !important;
+}
+
+.nav-link:hover {
+  color: #258cfb !important;
+}
+
+.footer {
+  background-color: #292929 !important;
+  color: #318fd3 !important;
+}
+
+.footer a {
+  color: #318fd3 !important;
+}
+
+.footer a:hover {
+  color: #258cfb !important;
+}
+
+.main {
+  padding: 20px 0;
+  background-color: #1ed760;
+}
+
+.navbar-brand img {
+  border-radius: 10px;
 }

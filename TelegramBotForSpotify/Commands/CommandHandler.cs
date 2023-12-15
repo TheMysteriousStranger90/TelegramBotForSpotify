@@ -46,7 +46,15 @@ public class CommandHandler
             case "/getplaylists":
                 await _playlistInfoCommand.Execute();
                 break;
-
+            case "/help":
+                var helpMessage = "Here are the available commands:\n" +
+                                  "/start - Start the bot\n" +
+                                  "/gettrack - Get the current track\n" +
+                                  "/gettracks - Get favorite tracks\n" +
+                                  "/getalbums - Get favorite albums\n" +
+                                  "/getplaylists - Get playlists";
+                await _telegramService.SendMessage(message.Chat.Id.ToString(), helpMessage);
+                break;
             default:
                 await _telegramService.SendMessage(message.Chat.Id.ToString(), "Unknown command");
                 break;
