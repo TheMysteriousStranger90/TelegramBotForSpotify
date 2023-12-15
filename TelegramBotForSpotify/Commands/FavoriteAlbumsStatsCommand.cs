@@ -7,13 +7,11 @@ public class FavoriteAlbumsStatsCommand : ICommand
 {
     private readonly ISpotifyAlbumService _spotifyAlbumService;
     private readonly ITelegramService _telegramService;
-    private readonly string _userId;
 
-    public FavoriteAlbumsStatsCommand(ISpotifyAlbumService spotifyAlbumService, ITelegramService telegramService, string userId)
+    public FavoriteAlbumsStatsCommand(ISpotifyAlbumService spotifyAlbumService, ITelegramService telegramService)
     {
         _spotifyAlbumService = spotifyAlbumService;
         _telegramService = telegramService;
-        _userId = userId;
     }
 
     public async Task Execute()
