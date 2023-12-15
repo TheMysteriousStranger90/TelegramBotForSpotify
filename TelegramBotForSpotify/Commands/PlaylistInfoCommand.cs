@@ -7,18 +7,16 @@ public class PlaylistInfoCommand : ICommand
 {
     private readonly ISpotifyPlaylistService _spotifyPlaylistService;
     private readonly ITelegramService _telegramService;
-    private readonly string _userId;
 
-    public PlaylistInfoCommand(ISpotifyPlaylistService spotifyPlaylistService, ITelegramService telegramService, string userId)
+    public PlaylistInfoCommand(ISpotifyPlaylistService spotifyPlaylistService, ITelegramService telegramService)
     {
         _spotifyPlaylistService = spotifyPlaylistService;
         _telegramService = telegramService;
-        _userId = userId;
     }
 
     public async Task Execute()
     {
-        var allPlaylists = await _spotifyPlaylistService.GetAllFavoritePlaylists(_userId);
+        var allPlaylists = await _spotifyPlaylistService.GetAllFavoritePlaylists();
         foreach (var playlistInfo in allPlaylists)
         {
             var message = $"Playlist: {playlistInfo.Name}\nTracks: {playlistInfo.Tracks.Total}";

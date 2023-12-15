@@ -12,7 +12,7 @@ public class SpotifyPlaylistService : ISpotifyPlaylistService
         _spotify = spotify;
     }
 
-    public async Task<List<FullPlaylist>> GetAllFavoritePlaylists(string userId)
+    public async Task<List<FullPlaylist>> GetAllFavoritePlaylists()
     {
         try
         {
@@ -20,7 +20,7 @@ public class SpotifyPlaylistService : ISpotifyPlaylistService
 
             var allPlaylists = new List<FullPlaylist>();
 
-            await foreach (var playlist in spotifyClient.Paginate(await spotifyClient.Playlists.GetUsers(userId)))
+            await foreach (var playlist in spotifyClient.Paginate(await spotifyClient.Playlists.GetUsers(spotifyClient.UserProfile.Current().Result.Id)))
             {
                 allPlaylists.Add(playlist);
             }

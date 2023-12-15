@@ -4,5 +4,5 @@ namespace TelegramBotForSpotify.Interfaces;
 
 public interface ISpotifyPlaylistService
 {
-    Task<List<FullPlaylist>> GetAllFavoritePlaylists(string userId);
+    Task<List<FullPlaylist>> GetAllFavoritePlaylists();
 }
