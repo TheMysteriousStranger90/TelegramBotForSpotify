@@ -13,7 +13,9 @@ public class CommandHandler
     private readonly PlaylistInfoCommand _playlistInfoCommand;
     private readonly ISpotifyClientFactory _spotifyClientFactory;
 
-    public CommandHandler(ISpotifyClientFactory spotifyClientFactory, ITelegramService telegramService, CurrentTrackCommand currentTrackCommand, FavoriteAlbumsStatsCommand favoriteAlbumsStatsCommand, FavoriteTracksCommand favoriteTracksCommand, PlaylistInfoCommand playlistInfoCommand)
+    public CommandHandler(ISpotifyClientFactory spotifyClientFactory, ITelegramService telegramService,
+        CurrentTrackCommand currentTrackCommand, FavoriteAlbumsStatsCommand favoriteAlbumsStatsCommand,
+        FavoriteTracksCommand favoriteTracksCommand, PlaylistInfoCommand playlistInfoCommand)
     {
         _telegramService = telegramService;
         _currentTrackCommand = currentTrackCommand;
@@ -26,7 +28,7 @@ public class CommandHandler
     public async Task HandleCommand(Message message)
     {
         var spotifyClient = await _spotifyClientFactory.CreateSpotifyClientAsync();
-        
+
         string command = message.Text.Split(' ')[0];
 
         switch (command)
@@ -60,87 +62,4 @@ public class CommandHandler
                 break;
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /*
-    private readonly ITelegramService _telegramService;
-    private readonly ISpotifyAlbumService _spotifyAlbumService;
-    private readonly ISpotifyPlaylistService _spotifyPlaylistService;
-    private readonly ISpotifyTrackService _spotifyTrackService;
-
-    public CommandHandler(ITelegramService telegramService, ISpotifyAlbumService spotifyAlbumService, ISpotifyPlaylistService spotifyPlaylistService, ISpotifyTrackService spotifyTrackService)
-    {
-        _telegramService = telegramService;
-        _spotifyAlbumService = spotifyAlbumService;
-        _spotifyPlaylistService = spotifyPlaylistService;
-        _spotifyTrackService = spotifyTrackService;
-    }
-
-    public async Task HandleCommand(Message message)
-    {
-        string command = message.Text.Split(' ')[0];
-
-        switch (command)
-        {
-            case "/start":
-                await _telegramService.SendMessage(message.Chat.Id.ToString(), "Bot started");
-                break;
-            case "/gettrack":
-                var track = await _spotifyTrackService.GetCurrentTrack();
-                if (track != null)
-                {
-                    await _telegramService.SendMessage(message.Chat.Id.ToString(), $"Now playing: {track.Name} by {track.Artists[0].Name}");
-                }
-                else
-                {
-                    await _telegramService.SendMessage(message.Chat.Id.ToString(), "No track is currently playing.");
-                }
-                break;
-            case "/gettracks":
-                var tracks = await _spotifyTrackService.GetAllFavoriteTracks();
-                foreach (var savedTrack in tracks)
-                {
-                    var _track = savedTrack.Track;
-                    await _telegramService.SendMessage(message.Chat.Id.ToString(), $"Track: {_track.Name} by {_track.Artists[0].Name}");
-                }
-                break;
-            case "/getalbums":
-                var albums = await _spotifyAlbumService.GetAllFavoriteAlbums();
-                foreach (var album in albums)
-                {
-                    await _telegramService.SendMessage(message.Chat.Id.ToString(), $"Album: {album.Album.Name} by {album.Album.Artists}");
-                }
-                break;
-            case "/getplaylists":
-                string userId = message.From.Id.ToString();
-                var playlists = await _spotifyPlaylistService.GetAllFavoritePlaylists(userId);
-                foreach (var playlist in playlists)
-                {
-                    await _telegramService.SendMessage(message.Chat.Id.ToString(), $"Playlist: {playlist.Name} with {playlist.Tracks.Total} tracks");
-                }
-                break;
-
-            default:
-                await _telegramService.SendMessage(message.Chat.Id.ToString(), "Unknown command");
-                break;
-        }
-    }
-    */
-    
-    
 }

@@ -19,7 +19,8 @@ public class FavoriteTracksCommand : ICommand
         var allTracks = await _spotifyTrackService.GetAllFavoriteTracks();
         foreach (var trackInfo in allTracks)
         {
-            var message = $"Track: {trackInfo.Track.Name}\nArtist: {trackInfo.Track.Artists[0].Name}\nAlbum: {trackInfo.Track.Album.Name}";
+            var message =
+                $"Track: {trackInfo.Track.Name}\nArtist: {trackInfo.Track.Artists[0].Name}\nAlbum: {trackInfo.Track.Album.Name}";
             await _telegramService.SendMessage(chatId: "your_chat_id", text: message);
             await Task.Delay(1000);
         }

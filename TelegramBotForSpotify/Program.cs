@@ -1,4 +1,5 @@
 using SpotifyAPI.Web;
+using TelegramBotForSpotify;
 using TelegramBotForSpotify.Auth;
 using TelegramBotForSpotify.Commands;
 using TelegramBotForSpotify.Helpers;
@@ -62,7 +63,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+app.MapGet("/callback", async (ISpotifyAuthorizationService spotifyAuthService, ITelegramService telegramService, string code, string state) =>
+{
+    // Use the code to authorize the Spotify client
+    await spotifyAuthService.Authorize(code);
+
+    // Send a message to the user
+    await telegramService.SendMessage(state, "Authorization successful");
+});
+
 app.UseStaticFiles();
 
 app.UseRouting();

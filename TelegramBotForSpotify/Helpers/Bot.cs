@@ -26,7 +26,7 @@ public class Bot
             {
                 var chatId = update.Message.Chat.Id;
                 var state = "state";
-                _authorizeManager.Authorize(chatId, state);
+                _authorizeManager.StartAuthorization(chatId);
             }
         }
     }
