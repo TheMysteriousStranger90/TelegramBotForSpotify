@@ -4,5 +4,5 @@ namespace TelegramBotForSpotify.Interfaces;
 
 public interface ISpotifyClientFactory
 {
-    Task<SpotifyClient> CreateSpotifyClientAsync();
+    SpotifyClient CreateSpotifyClient();
 }

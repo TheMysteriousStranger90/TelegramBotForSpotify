@@ -16,11 +16,12 @@ public class SpotifyPlaylistService : ISpotifyPlaylistService
     {
         try
         {
-            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
+            var spotifyClient = _spotify.CreateSpotifyClient();
 
             var allPlaylists = new List<FullPlaylist>();
 
-            await foreach (var playlist in spotifyClient.Paginate(await spotifyClient.Playlists.GetUsers(spotifyClient.UserProfile.Current().Result.Id)))
+            await foreach (var playlist in spotifyClient.Paginate(
+                               await spotifyClient.Playlists.GetUsers(spotifyClient.UserProfile.Current().Result.Id)))
             {
                 allPlaylists.Add(playlist);
             }

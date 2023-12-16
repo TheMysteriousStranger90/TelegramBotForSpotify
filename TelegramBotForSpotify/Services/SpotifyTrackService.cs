@@ -16,7 +16,7 @@ public class SpotifyTrackService : ISpotifyTrackService
     {
         try
         {
-            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
+            var spotifyClient = _spotify.CreateSpotifyClient();
             var playback = await spotifyClient.Player.GetCurrentPlayback();
             if (playback?.Item is FullTrack track)
             {
@@ -43,7 +43,7 @@ public class SpotifyTrackService : ISpotifyTrackService
     {
         try
         {
-            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
+            var spotifyClient = _spotify.CreateSpotifyClient();
             var allTracks = new List<SavedTrack>();
 
             await foreach (var track in spotifyClient.Paginate(await spotifyClient.Library.GetTracks()))

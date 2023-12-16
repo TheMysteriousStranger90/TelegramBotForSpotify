@@ -23,6 +23,7 @@ public class AuthorizeManager
     public async Task HandleCallback(string code, string state)
     {
         var token = await _spotifyAuthService.Authorize(code);
+        _spotifyAuthService.InitializeSpotifyClient(token);
         await _telegramService.SendMessage(state, $"Authorization successful. Your token is: {token}");
     }
 }

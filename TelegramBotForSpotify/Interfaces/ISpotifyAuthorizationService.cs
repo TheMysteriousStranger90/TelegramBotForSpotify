@@ -9,4 +9,5 @@ public interface ISpotifyAuthorizationService
     string GetAuthorizationUrl(string state);
     SpotifyClient GetSpotifyClient();
     Task<string> GetTokenAsync();
+    void InitializeSpotifyClient(string token);
 }

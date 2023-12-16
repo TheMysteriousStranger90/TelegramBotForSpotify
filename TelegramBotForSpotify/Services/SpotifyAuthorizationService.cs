@@ -23,34 +23,46 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
 
     public async Task<string> Authorize(string code)
     {
-        using (var httpClient = new HttpClient())
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token");
+
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Basic",
+            Convert.ToBase64String(
+                Encoding.UTF8.GetBytes($"{_spotifySettings.ClientId}:{_spotifySettings.ClientSecret}")));
+
+        request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token");
+            ["grant_type"] = "authorization_code",
+            ["code"] = code,
+            ["redirect_uri"] = _spotifySettings.RedirectUri
+        });
 
-            request.Headers.Authorization = new AuthenticationHeaderValue(
-                "Basic",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_spotifySettings.ClientId}:{_spotifySettings.ClientSecret}")));
+        var response = await _httpClient.SendAsync(request);
 
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "authorization_code",
-                ["code"] = code,
-                ["redirect_uri"] = _spotifySettings.RedirectUri
-            });
-
-            var response = await httpClient.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var responseObject = JsonConvert.DeserializeObject<JObject>(responseContent);
-                return responseObject.Value<string>("access_token");
-            }
-            else
-            {
-                throw new Exception("Failed to authorize with Spotify");
-            }
+        if (response.IsSuccessStatusCode)
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+            return responseObject.Value<string>("access_token");
         }
+        else
+        {
+            throw new Exception("Failed to authorize with Spotify");
+        }
+    }
+
+    public async Task<string> GetTokenAsync()
+    {
+        var config = SpotifyClientConfig.CreateDefault();
+        var request = new ClientCredentialsRequest(_spotifySettings.ClientId, _spotifySettings.ClientSecret);
+        var response = await new OAuthClient(config).RequestToken(request);
+
+        if (response.IsExpired)
+        {
+            throw new Exception("Failed to get token from Spotify");
+        }
+
+        return response.AccessToken;
     }
 
     public string GetAuthorizationUrl(string state)
@@ -61,7 +73,7 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             ["response_type"] = "code",
             ["redirect_uri"] = _spotifySettings.RedirectUri,
             ["state"] = state,
-            ["scope"] = "user-read-private user-read-email" // Замените на нужные вам разрешения
+            ["scope"] = "user-read-private user-read-email"
         };
 
         var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
@@ -69,31 +81,9 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
         return $"https://accounts.spotify.com/authorize?{queryString}";
     }
 
-/*
-    public async Task<AccessTokenResponse?> RefreshToken(string refreshToken)
+    public void InitializeSpotifyClient(string token)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_spotifySettings.ClientId}:{_spotifySettings.ClientSecret}")));
-        request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            { "grant_type", "refresh_token" },
-            { "refresh_token", refreshToken }
-        });
-
-        var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<AccessTokenResponse>(content);
-    }
-*/
-    public async Task<string> GetTokenAsync()
-    {
-        var config = SpotifyClientConfig.CreateDefault();
-        var request = new ClientCredentialsRequest(_spotifySettings.ClientId, _spotifySettings.ClientSecret);
-        var response = await new OAuthClient(config).RequestToken(request);
-
-        return response.AccessToken;
+        _spotify = new SpotifyClient(token);
     }
 
     public SpotifyClient GetSpotifyClient()

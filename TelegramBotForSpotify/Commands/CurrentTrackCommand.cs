@@ -1,4 +1,5 @@
-﻿using TelegramBotForSpotify.Interfaces;
+﻿using Telegram.Bot.Types;
+using TelegramBotForSpotify.Interfaces;
 using TelegramBotForSpotify.Services;
 
 namespace TelegramBotForSpotify.Commands;
@@ -14,13 +15,13 @@ public class CurrentTrackCommand : ICommand
         _telegramService = telegramService;
     }
 
-    public async Task Execute()
+    public async Task Execute(Message message)
     {
         var track = await _spotifyTrackService.GetCurrentTrack();
         if (track != null)
         {
-            var message = $"Now playing: {track.Name} by {track.Artists[0].Name}";
-            await _telegramService.SendMessage(chatId: "your_chat_id", text: message);
+            var _message = $"Now playing: {track.Name} by {track.Artists[0].Name}";
+            await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
         }
     }
 }

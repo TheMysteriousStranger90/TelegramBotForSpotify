@@ -8,14 +8,17 @@ public class MainController : Controller
 {
     private readonly CommandHandler _commandHandler;
 
-    public MainController(CommandHandler commandHandler)
+    private readonly AuthorizeManager _authorizeManager;
+
+    public MainController(AuthorizeManager authorizeManager)
     {
-        _commandHandler = commandHandler;
+        _authorizeManager = authorizeManager;
     }
 
-    public async Task<IActionResult> HandleCommand(Message message)
+    [HttpGet("callback")]
+    public async Task<IActionResult> HandleSpotifyCallback(string code, string state)
     {
-        await _commandHandler.HandleCommand(message);
+        await _authorizeManager.HandleCallback(code, state);
         return Ok();
     }
 }

@@ -12,10 +12,8 @@ public class SpotifyClientFactory : ISpotifyClientFactory
         _spotifyAuthorizationService = spotifyAuthorizationService;
     }
 
-    public async Task<SpotifyClient> CreateSpotifyClientAsync()
+    public SpotifyClient CreateSpotifyClient()
     {
-        // Use the authorization service to get the necessary data for SpotifyClient
-        var token = await _spotifyAuthorizationService.GetTokenAsync();
-        return new SpotifyClient(token);
+        return _spotifyAuthorizationService.GetSpotifyClient();
     }
 }

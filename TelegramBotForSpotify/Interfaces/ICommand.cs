@@ -1,6 +1,8 @@
-﻿namespace TelegramBotForSpotify.Interfaces;
+﻿using Telegram.Bot.Types;
+
+namespace TelegramBotForSpotify.Interfaces;
 
 public interface ICommand
 {
-    Task Execute();
+    Task Execute(Message message);
 }

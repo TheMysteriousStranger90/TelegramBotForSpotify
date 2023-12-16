@@ -27,8 +27,6 @@ public class CommandHandler
 
     public async Task HandleCommand(Message message)
     {
-        var spotifyClient = await _spotifyClientFactory.CreateSpotifyClientAsync();
-
         string command = message.Text.Split(' ')[0];
 
         switch (command)
@@ -37,16 +35,16 @@ public class CommandHandler
                 await _telegramService.SendMessage(message.Chat.Id.ToString(), "Bot started");
                 break;
             case "/gettrack":
-                await _currentTrackCommand.Execute();
+                await _currentTrackCommand.Execute(message);
                 break;
             case "/gettracks":
-                await _favoriteTracksCommand.Execute();
+                await _favoriteTracksCommand.Execute(message);
                 break;
             case "/getalbums":
-                await _favoriteAlbumsStatsCommand.Execute();
+                await _favoriteAlbumsStatsCommand.Execute(message);
                 break;
             case "/getplaylists":
-                await _playlistInfoCommand.Execute();
+                await _playlistInfoCommand.Execute(message);
                 break;
             case "/help":
                 var helpMessage = "Here are the available commands:\n" +

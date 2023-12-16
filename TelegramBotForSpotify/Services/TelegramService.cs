@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using TelegramBotForSpotify.Auth;
 using TelegramBotForSpotify.Interfaces;
 
@@ -18,12 +19,27 @@ public class TelegramService : ITelegramService
 
     public async Task SendMessage(string chatId, string text)
     {
-        await _botClient.SendTextMessageAsync(chatId, text);
+        try
+        {
+            await _botClient.SendTextMessageAsync(chatId, text);
+        }
+        catch (ApiRequestException e)
+        {
+            Console.WriteLine($"An error occurred while sending message: {e.Message}");
+        }
     }
 
     public async Task<List<Telegram.Bot.Types.Update>> GetUpdates(int offset = 0)
     {
-        var updates = await _botClient.GetUpdatesAsync(offset);
-        return updates.ToList();
+        try
+        {
+            var updates = await _botClient.GetUpdatesAsync(offset);
+            return updates.ToList();
+        }
+        catch (ApiRequestException e)
+        {
+            Console.WriteLine($"An error occurred while getting updates: {e.Message}");
+            return new List<Telegram.Bot.Types.Update>();
+        }
     }
 }
