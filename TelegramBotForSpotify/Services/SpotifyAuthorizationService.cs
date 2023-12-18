@@ -12,7 +12,9 @@ namespace TelegramBotForSpotify.Services;
 public class SpotifyAuthorizationService : ISpotifyAuthorizationService
 {
     private readonly SpotifySettings _spotifySettings;
+    private string _refreshToken;
     private SpotifyClient _spotify;
+    private DateTime _tokenExpirationTime;
     private readonly HttpClient _httpClient;
 
     public SpotifyAuthorizationService(IOptions<SpotifySettings> spotifySettings)
@@ -43,6 +45,10 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
         {
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+
+            _tokenExpirationTime = DateTime.UtcNow.AddSeconds(responseObject.Value<int>("expires_in"));
+            _refreshToken = responseObject.Value<string>("refresh_token");
+
             return responseObject.Value<string>("access_token");
         }
         else
@@ -73,12 +79,66 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             ["response_type"] = "code",
             ["redirect_uri"] = _spotifySettings.RedirectUri,
             ["state"] = state,
-            ["scope"] = "user-read-private user-read-email"
+            ["scope"] = "user-read-private user-read-email user-library-read"
         };
 
         var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
 
         return $"https://accounts.spotify.com/authorize?{queryString}";
+    }
+
+    public async Task<string> RefreshToken(string refreshToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://accounts.spotify.com/api/token");
+
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Basic",
+            Convert.ToBase64String(
+                Encoding.UTF8.GetBytes($"{_spotifySettings.ClientId}:{_spotifySettings.ClientSecret}")));
+
+        request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["grant_type"] = "refresh_token",
+            ["refresh_token"] = refreshToken
+        });
+
+        var response = await _httpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+
+            _tokenExpirationTime = DateTime.UtcNow.AddSeconds(responseObject.Value<int>("expires_in"));
+
+            return responseObject.Value<string>("access_token");
+        }
+        else
+        {
+            throw new Exception("Failed to refresh Spotify access token");
+        }
+    }
+
+    public bool IsAccessTokenExpired()
+    {
+        if (_tokenExpirationTime == DateTime.MinValue)
+        {
+            return true;
+        }
+
+        TimeSpan difference = _tokenExpirationTime - DateTime.UtcNow;
+
+        if (difference.TotalSeconds <= 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public string GetRefreshToken()
+    {
+        return _refreshToken;
     }
 
     public void InitializeSpotifyClient(string token)

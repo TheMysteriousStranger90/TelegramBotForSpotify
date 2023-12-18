@@ -2,6 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using TelegramBotForSpotify.Auth;
+using TelegramBotForSpotify.Commands;
 using TelegramBotForSpotify.Interfaces;
 
 namespace TelegramBotForSpotify.Services;
@@ -40,6 +41,16 @@ public class TelegramService : ITelegramService
         {
             Console.WriteLine($"An error occurred while getting updates: {e.Message}");
             return new List<Telegram.Bot.Types.Update>();
+        }
+    }
+
+    public async Task GetUpdatesAndHandleThem(CommandHandler commandHandler, int offset = 0)
+    {
+        var updates = await GetUpdates(offset);
+
+        foreach (var update in updates)
+        {
+            await commandHandler.HandleUpdate(update);
         }
     }
 }

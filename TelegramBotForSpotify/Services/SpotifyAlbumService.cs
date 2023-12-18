@@ -16,10 +16,11 @@ public class SpotifyAlbumService : ISpotifyAlbumService
     {
         try
         {
-            var spotifyClient = _spotify.CreateSpotifyClient();
+            var spotifyClient = await _spotify.CreateSpotifyClient();
             var allAlbums = new List<SavedAlbum>();
 
-            await foreach (var album in spotifyClient.Paginate(await spotifyClient.Library.GetAlbums()))
+            var firstPage = await spotifyClient.Library.GetAlbums();
+            await foreach (var album in spotifyClient.Paginate(firstPage))
             {
                 allAlbums.Add(album);
             }

@@ -62,13 +62,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.MapGet("/callback", async (ISpotifyAuthorizationService spotifyAuthService, ITelegramService telegramService, string code, string state) =>
+app.MapGet("/callback", async (AuthorizeManager authorizeManager, string code, string state) =>
 {
-    // Use the code to authorize the Spotify client
-    await spotifyAuthService.Authorize(code);
-
-    // Send a message to the user
-    await telegramService.SendMessage(state, "Authorization successful");
+    // Use the code to authorize the Spotify client and handle the callback
+    await authorizeManager.HandleCallback(code, state);
 });
 
 app.UseStaticFiles();

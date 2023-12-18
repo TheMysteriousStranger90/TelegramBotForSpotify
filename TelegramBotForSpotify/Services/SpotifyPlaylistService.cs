@@ -16,7 +16,7 @@ public class SpotifyPlaylistService : ISpotifyPlaylistService
     {
         try
         {
-            var spotifyClient = _spotify.CreateSpotifyClient();
+            var spotifyClient = await _spotify.CreateSpotifyClient();
 
             var allPlaylists = new List<FullPlaylist>();
 

@@ -1,5 +1,6 @@
 ﻿using SpotifyAPI.Web;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using TelegramBotForSpotify.Interfaces;
 
 namespace TelegramBotForSpotify.Commands;
@@ -28,6 +29,7 @@ public class CommandHandler
     public async Task HandleCommand(Message message)
     {
         string command = message.Text.Split(' ')[0];
+
 
         switch (command)
         {
@@ -58,6 +60,14 @@ public class CommandHandler
             default:
                 await _telegramService.SendMessage(message.Chat.Id.ToString(), "Unknown command");
                 break;
+        }
+    }
+
+    public async Task HandleUpdate(Update update)
+    {
+        if (update.Type == UpdateType.Message)
+        {
+            await HandleCommand(update.Message);
         }
     }
 }
