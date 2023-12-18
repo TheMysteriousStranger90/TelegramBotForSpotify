@@ -48,25 +48,41 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
 
             _tokenExpirationTime = DateTime.UtcNow.AddSeconds(responseObject.Value<int>("expires_in"));
             _refreshToken = responseObject.Value<string>("refresh_token");
+            await SaveRefreshToken(_refreshToken);
 
             return responseObject.Value<string>("access_token");
         }
         else
         {
-            throw new Exception("Failed to authorize with Spotify");
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(
+                $"Failed to authorize with Spotify. Status code: {response.StatusCode}, Response: {errorContent}");
         }
     }
 
     public async Task<string> GetTokenAsync()
     {
+        if (_refreshToken == null)
+        {
+            await LoadRefreshToken();
+        }
+
+        if (_refreshToken == null)
+        {
+            throw new InvalidOperationException("Refresh token is not available. Please authorize first.");
+        }
+
         var config = SpotifyClientConfig.CreateDefault();
-        var request = new ClientCredentialsRequest(_spotifySettings.ClientId, _spotifySettings.ClientSecret);
+        var request = new AuthorizationCodeRefreshRequest(_spotifySettings.ClientId, _spotifySettings.ClientSecret, _refreshToken);
         var response = await new OAuthClient(config).RequestToken(request);
 
-        if (response.IsExpired)
+        if (string.IsNullOrEmpty(response.AccessToken))
         {
-            throw new Exception("Failed to get token from Spotify");
+            throw new Exception("Failed to refresh token: Access token is null or empty");
         }
+
+        _refreshToken = response.RefreshToken;
+        await SaveRefreshToken(_refreshToken);
 
         return response.AccessToken;
     }
@@ -79,7 +95,7 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             ["response_type"] = "code",
             ["redirect_uri"] = _spotifySettings.RedirectUri,
             ["state"] = state,
-            ["scope"] = "user-read-private user-read-email user-library-read"
+            ["scope"] = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state"
         };
 
         var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
@@ -110,12 +126,20 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             var responseObject = JsonConvert.DeserializeObject<JObject>(responseContent);
 
             _tokenExpirationTime = DateTime.UtcNow.AddSeconds(responseObject.Value<int>("expires_in"));
+            
+            if (responseObject.ContainsKey("refresh_token"))
+            {
+                _refreshToken = responseObject.Value<string>("refresh_token");
+                await SaveRefreshToken(_refreshToken);
+            }
 
             return responseObject.Value<string>("access_token");
         }
         else
         {
-            throw new Exception("Failed to refresh Spotify access token");
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception(
+                $"Failed to refresh Spotify access token. Status code: {response.StatusCode}, Response: {errorContent}");
         }
     }
 
@@ -149,5 +173,26 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
     public SpotifyClient GetSpotifyClient()
     {
         return _spotify;
+    }
+    
+    public async Task SaveRefreshToken(string refreshToken)
+    {
+        var json = JsonConvert.SerializeObject(refreshToken);
+        await File.WriteAllTextAsync(Path.Combine("wwwroot", "data", "refresh.json"), json);
+    }
+
+    public async Task LoadRefreshToken()
+    {
+        var filePath = Path.Combine("wwwroot", "data", "refresh.json");
+        if (File.Exists(filePath))
+        {
+            var json = await File.ReadAllTextAsync(filePath);
+            _refreshToken = JsonConvert.DeserializeObject<string>(json);
+        }
+    }
+    
+    public bool IsUserAuthorized()
+    {
+        return !string.IsNullOrEmpty(_refreshToken);
     }
 }

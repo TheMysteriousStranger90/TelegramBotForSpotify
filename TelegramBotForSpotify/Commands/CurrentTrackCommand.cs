@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using TelegramBotForSpotify.Interfaces;
 using TelegramBotForSpotify.Services;
 
@@ -15,13 +16,22 @@ public class CurrentTrackCommand : ICommand
         _telegramService = telegramService;
     }
 
-    public async Task Execute(Message message)
+    public async Task ExecuteAsync(Update update)
     {
-        var track = await _spotifyTrackService.GetCurrentTrack();
-        if (track != null)
+        var message = update.Message;
+        if (message != null)
         {
-            var _message = $"Now playing: {track.Name} by {track.Artists[0].Name}";
-            await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+            var track = await _spotifyTrackService.GetCurrentTrack();
+            if (track != null)
+            {
+                var _message = $"Now playing: {track.Name} by {track.Artists[0].Name}";
+                await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+            }
+            else
+            {
+                var _message = "No track is currently playing.";
+                await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+            }
         }
     }
 }

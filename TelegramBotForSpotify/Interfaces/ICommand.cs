@@ -4,5 +4,5 @@ namespace TelegramBotForSpotify.Interfaces;
 
 public interface ICommand
 {
-    Task Execute(Message message);
+    Task ExecuteAsync(Update update);
 }

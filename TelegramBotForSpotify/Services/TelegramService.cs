@@ -50,7 +50,7 @@ public class TelegramService : ITelegramService
 
         foreach (var update in updates)
         {
-            await commandHandler.HandleUpdate(update);
+            //await commandHandler.HandleUpdate(update);
         }
     }
 }

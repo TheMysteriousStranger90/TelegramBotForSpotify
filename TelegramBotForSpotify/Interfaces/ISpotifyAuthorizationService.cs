@@ -13,4 +13,7 @@ public interface ISpotifyAuthorizationService
     public bool IsAccessTokenExpired();
     public string GetRefreshToken();
     void InitializeSpotifyClient(string token);
+    Task LoadRefreshToken();
+    Task SaveRefreshToken(string refreshToken);
+    bool IsUserAuthorized();
 }

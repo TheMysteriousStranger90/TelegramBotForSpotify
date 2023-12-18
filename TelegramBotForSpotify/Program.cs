@@ -45,14 +45,14 @@ builder.Services.AddSingleton<AuthorizeManager>();
 
 builder.Services.AddSingleton<CommandHandler>();
 
-builder.Services.AddSingleton<Bot>();
+builder.Services.AddSingleton<SpotifyBot>();
 
 var app = builder.Build();
 
 
 // Get the Bot from the services and start it
-var bot = app.Services.GetRequiredService<Bot>();
-await bot.Start();
+var bot = app.Services.GetRequiredService<SpotifyBot>();
+bot.StartAsync(new CancellationToken());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using TelegramBotForSpotify.Interfaces;
 using TelegramBotForSpotify.Services;
 
@@ -15,15 +16,19 @@ public class FavoriteAlbumsStatsCommand : ICommand
         _telegramService = telegramService;
     }
 
-    public async Task Execute(Message message)
+    public async Task ExecuteAsync(Update update)
     {
-        var allAlbums = await _spotifyAlbumService.GetAllFavoriteAlbums();
-        foreach (var albumInfo in allAlbums)
+        var message = update.Message;
+        if (message != null && message.Type == MessageType.Text)
         {
-            var _message =
-                $"Album: {albumInfo.Album.Name}\nArtist: {albumInfo.Album.Artists[0].Name}\nTracks: {albumInfo.Album.Tracks.Items.Count}";
-            await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
-            await Task.Delay(1000);
+            var allAlbums = await _spotifyAlbumService.GetAllFavoriteAlbums();
+            foreach (var albumInfo in allAlbums)
+            {
+                var _message =
+                    $"Album: {albumInfo.Album.Name}\nArtist: {albumInfo.Album.Artists[0].Name}\nTracks: {albumInfo.Album.Tracks.Items.Count}";
+                await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+                await Task.Delay(1000);
+            }
         }
     }
 }
