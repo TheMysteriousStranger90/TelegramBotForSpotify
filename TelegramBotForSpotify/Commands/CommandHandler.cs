@@ -12,7 +12,9 @@ public class CommandHandler
     private readonly AuthorizeManager _authorizeManager;
     private readonly ITelegramService _telegramService;
 
-    public CommandHandler(AuthorizeManager authorizeManager, ISpotifyTrackService spotifyTrackService, ISpotifyAlbumService spotifyAlbumService, ISpotifyPlaylistService spotifyPlaylistService, ITelegramService telegramService)
+    public CommandHandler(AuthorizeManager authorizeManager, ISpotifyTrackService spotifyTrackService, ISpotifyTracksService spotifyTracksService,
+        ISpotifyAlbumService spotifyAlbumService, ISpotifyPlaylistService spotifyPlaylistService,
+        ITelegramService telegramService)
     {
         _authorizeManager = authorizeManager;
         _telegramService = telegramService;
@@ -20,7 +22,7 @@ public class CommandHandler
         {
             { "/authorize", new AuthorizeCommand(authorizeManager) },
             { "/gettrack", new CurrentTrackCommand(spotifyTrackService, telegramService) },
-            { "/gettracks", new FavoriteTracksCommand(spotifyTrackService, telegramService) },
+            { "/gettracks", new FavoriteTracksCommand(spotifyTracksService, telegramService) },
             { "/getalbums", new FavoriteAlbumsStatsCommand(spotifyAlbumService, telegramService) },
             { "/getplaylists", new PlaylistInfoCommand(spotifyPlaylistService, telegramService) },
             { "/help", new HelpCommand(telegramService) }
@@ -33,7 +35,8 @@ public class CommandHandler
         {
             if (command != "/authorize" && !(await _authorizeManager.IsAuthorized(update.Message.Chat.Id)))
             {
-                await _telegramService.SendMessage(update.Message.Chat.Id.ToString(), "Please authorize first by using the /authorize command.");
+                await _telegramService.SendMessage(update.Message.Chat.Id.ToString(),
+                    "Please authorize first by using the /authorize command.");
             }
             else
             {
@@ -42,7 +45,8 @@ public class CommandHandler
         }
         else
         {
-            await _telegramService.SendMessage(update.Message.Chat.Id.ToString(), $"Unknown command: {command}. Please use /help to get a list of available commands.");
+            await _telegramService.SendMessage(update.Message.Chat.Id.ToString(),
+                $"Unknown command: {command}. Please use /help to get a list of available commands.");
         }
     }
 }

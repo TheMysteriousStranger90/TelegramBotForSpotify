@@ -38,6 +38,8 @@ public class AuthorizeManager
         var token = await _spotifyAuthService.Authorize(code);
         _spotifyAuthService.InitializeSpotifyClient(token);
         await _telegramService.SendMessage(state, $"Authorization successful. Your token is: {token}");
+        
+        await _telegramService.SendMessage(state, $"Please use /help to get a list of available commands.");
 
         if (long.TryParse(state, out var chatId))
         {

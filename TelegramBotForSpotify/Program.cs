@@ -18,6 +18,7 @@ builder.Configuration
 // Add Spotify and Telegram services
 builder.Services.Configure<SpotifySettings>(builder.Configuration.GetSection("Spotify"));
 builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
+builder.Services.Configure<ChatGPTSettings>(builder.Configuration.GetSection("ChatGPT"));
 builder.Services.AddSingleton<ITelegramService, TelegramService>();
 builder.Services.AddSingleton<ISpotifyAuthorizationService, SpotifyAuthorizationService>();
 builder.Services.AddSingleton(provider =>
@@ -30,8 +31,10 @@ builder.Services.AddSingleton(provider =>
 builder.Services.AddSingleton<ISpotifyAlbumService, SpotifyAlbumService>();
 builder.Services.AddSingleton<ISpotifyPlaylistService, SpotifyPlaylistService>();
 builder.Services.AddSingleton<ISpotifyTrackService, SpotifyTrackService>();
-
+builder.Services.AddSingleton<ISpotifyTracksService, SpotifyTracksService>();
 builder.Services.AddSingleton<ISpotifyClientFactory, SpotifyClientFactory>();
+
+builder.Services.AddSingleton<ChatGPTService>();
 
 // Add commands to the services
 builder.Services.AddSingleton<CurrentTrackCommand>();

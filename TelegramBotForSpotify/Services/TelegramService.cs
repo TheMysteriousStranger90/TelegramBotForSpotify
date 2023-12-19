@@ -43,16 +43,6 @@ public class TelegramService : ITelegramService
             return new List<Telegram.Bot.Types.Update>();
         }
     }
-
-    public async Task GetUpdatesAndHandleThem(CommandHandler commandHandler, int offset = 0)
-    {
-        var updates = await GetUpdates(offset);
-
-        foreach (var update in updates)
-        {
-            //await commandHandler.HandleUpdate(update);
-        }
-    }
     
     public async Task SendPhotoAsync(string chatId, string photoUrl)
     {

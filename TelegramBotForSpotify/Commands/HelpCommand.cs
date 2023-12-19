@@ -28,7 +28,8 @@ public class HelpCommand : ICommand
         }
         else
         {
-            await _telegramService.SendMessage(message.Chat.Id.ToString(), text: "Invalid command. Please send a text message.");
+            await _telegramService.SendMessage(message.Chat.Id.ToString(),
+                text: "Invalid command. Please send a text message.");
         }
     }
 }

@@ -7,12 +7,12 @@ namespace TelegramBotForSpotify.Commands;
 
 public class FavoriteTracksCommand : ICommand
 {
-    private readonly ISpotifyTrackService _spotifyTrackService;
+    private readonly ISpotifyTracksService _spotifyTracksService;
     private readonly ITelegramService _telegramService;
 
-    public FavoriteTracksCommand(ISpotifyTrackService spotifyTrackService, ITelegramService telegramService)
+    public FavoriteTracksCommand(ISpotifyTracksService spotifyTracksService, ITelegramService telegramService)
     {
-        _spotifyTrackService = spotifyTrackService;
+        _spotifyTracksService = spotifyTracksService;
         _telegramService = telegramService;
     }
 
@@ -21,7 +21,7 @@ public class FavoriteTracksCommand : ICommand
         var message = update.Message;
         if (message != null && message.Type == MessageType.Text)
         {
-            var allTracks = await _spotifyTrackService.GetAllFavoriteTracks();
+            var allTracks = await _spotifyTracksService.GetAllFavoriteTracks();
             foreach (var trackInfo in allTracks)
             {
                 var _message =
