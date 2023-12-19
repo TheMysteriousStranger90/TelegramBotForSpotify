@@ -29,5 +29,10 @@ public class PlaylistInfoCommand : ICommand
                 await Task.Delay(1000);
             }
         }
+        else
+        {
+            var _message = "No favorite playlists.";
+            await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+        }
     }
 }

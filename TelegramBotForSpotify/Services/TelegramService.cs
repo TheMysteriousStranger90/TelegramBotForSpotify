@@ -53,4 +53,10 @@ public class TelegramService : ITelegramService
             //await commandHandler.HandleUpdate(update);
         }
     }
+    
+    public async Task SendPhotoAsync(string chatId, string photoUrl)
+    {
+        var photo = Telegram.Bot.Types.InputFile.FromUri(photoUrl);
+        await _botClient.SendPhotoAsync(chatId, photo);
+    }
 }

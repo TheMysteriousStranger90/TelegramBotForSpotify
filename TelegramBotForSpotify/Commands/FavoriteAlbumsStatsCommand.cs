@@ -30,5 +30,10 @@ public class FavoriteAlbumsStatsCommand : ICommand
                 await Task.Delay(1000);
             }
         }
+        else
+        {
+            var _message = "No favorite albums.";
+            await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+        }
     }
 }

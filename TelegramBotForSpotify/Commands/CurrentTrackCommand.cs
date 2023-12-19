@@ -24,8 +24,18 @@ public class CurrentTrackCommand : ICommand
             var track = await _spotifyTrackService.GetCurrentTrack();
             if (track != null)
             {
-                var _message = $"Now playing: {track.Name} by {track.Artists[0].Name}";
-                await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+                if (track.Album.Images.Count > 0)
+                {
+                    var imageUrl = track.Album.Images.Last().Url;
+                    var _message = $"Now playing: {track.Name} by {track.Artists[0].Name}";
+                    await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+                    await _telegramService.SendPhotoAsync(message.Chat.Id.ToString(), imageUrl);
+                }
+                else
+                {
+                    var _message = $"Now playing: {track.Name} by {track.Artists[0].Name}";
+                    await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+                }
             }
             else
             {

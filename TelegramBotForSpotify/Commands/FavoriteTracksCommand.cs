@@ -30,5 +30,10 @@ public class FavoriteTracksCommand : ICommand
                 await Task.Delay(1000);
             }
         }
+        else
+        {
+            var _message = "No favorite tracks.";
+            await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
+        }
     }
 }

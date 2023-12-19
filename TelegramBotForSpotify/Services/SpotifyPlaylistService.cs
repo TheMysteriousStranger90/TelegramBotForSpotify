@@ -20,8 +20,8 @@ public class SpotifyPlaylistService : ISpotifyPlaylistService
 
             var allPlaylists = new List<FullPlaylist>();
 
-            await foreach (var playlist in spotifyClient.Paginate(
-                               await spotifyClient.Playlists.GetUsers(spotifyClient.UserProfile.Current().Result.Id)))
+            var firstPage = await spotifyClient.Playlists.CurrentUsers();
+            await foreach (var playlist in spotifyClient.Paginate(firstPage))
             {
                 allPlaylists.Add(playlist);
             }

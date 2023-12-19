@@ -95,7 +95,7 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             ["response_type"] = "code",
             ["redirect_uri"] = _spotifySettings.RedirectUri,
             ["state"] = state,
-            ["scope"] = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state"
+            ["scope"] = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
         };
 
         var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
