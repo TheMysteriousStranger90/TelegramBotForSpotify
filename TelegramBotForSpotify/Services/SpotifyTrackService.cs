@@ -38,30 +38,4 @@ public class SpotifyTrackService : ISpotifyTrackService
             throw;
         }
     }
-
-    public async Task<List<SavedTrack>> GetAllFavoriteTracks()
-    {
-        try
-        {
-            var spotifyClient = await _spotify.CreateSpotifyClient();
-            var allTracks = new List<SavedTrack>();
-
-            await foreach (var track in spotifyClient.Paginate(await spotifyClient.Library.GetTracks()))
-            {
-                allTracks.Add(track);
-            }
-
-            return allTracks;
-        }
-        catch (APIException e)
-        {
-            Console.WriteLine(e.ToString());
-            throw;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-            throw;
-        }
-    }
 }
