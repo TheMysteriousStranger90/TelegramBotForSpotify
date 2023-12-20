@@ -40,6 +40,26 @@ Replace <Your Spotify Client ID>, <Your Spotify Client Secret>, and <Your Telegr
 ## Running the Project
 After setting up the appsettings.json file, you can run the project using your preferred .NET Core-compatible IDE or from the command line with the dotnet run command.
 
+## Running the Application with Docker
+
+1. Make sure you have Docker installed on your machine. If not, you can download it from [here](https://www.docker.com/products/docker-desktop).
+
+2. Navigate to the root directory of the project in your terminal.
+
+3. Build the Docker image from the Dockerfile:
+
+    ```bash
+    docker build -t telegrambotforspotify .
+    ```
+
+4. Run the Docker container, mapping the application's port 80 to port 5001 on the host machine:
+
+    ```bash
+    docker run -p 8000:80 -d telegrambotforspotify
+    ```
+
+5. Open a Telegram, find StrangerSpotifyBot and start it.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
