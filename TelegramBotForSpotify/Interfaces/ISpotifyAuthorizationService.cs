@@ -16,4 +16,8 @@ public interface ISpotifyAuthorizationService
     Task LoadRefreshToken();
     Task SaveRefreshToken(string refreshToken);
     bool IsUserAuthorized();
+    void InitializeSpotifyClient();
+    AuthorizationCodeTokenResponse LoadTokenFromFile();
+    Task SaveTokenToFile(AuthorizationCodeTokenResponse tokenResponse);
+    
 }

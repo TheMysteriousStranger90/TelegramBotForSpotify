@@ -16,6 +16,7 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
     private SpotifyClient _spotify;
     private DateTime _tokenExpirationTime;
     private readonly HttpClient _httpClient;
+    private readonly string _tokenFilePath = Path.Combine("wwwroot", "data", "mytoken.json");
 
     public SpotifyAuthorizationService(IOptions<SpotifySettings> spotifySettings)
     {
@@ -46,11 +47,18 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<JObject>(responseContent);
 
-            _tokenExpirationTime = DateTime.UtcNow.AddSeconds(responseObject.Value<int>("expires_in"));
-            _refreshToken = responseObject.Value<string>("refresh_token");
-            await SaveRefreshToken(_refreshToken);
+            var tokenResponse = new AuthorizationCodeTokenResponse
+            {
+                AccessToken = responseObject.Value<string>("access_token"),
+                RefreshToken = responseObject.Value<string>("refresh_token"),
+                ExpiresIn = responseObject.Value<int>("expires_in"),
+                TokenType = "Bearer",
+                Scope = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
+            };
 
-            return responseObject.Value<string>("access_token");
+            await SaveTokenToFile(tokenResponse);
+
+            return tokenResponse.AccessToken;
         }
         else
         {
@@ -125,15 +133,18 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<JObject>(responseContent);
 
-            _tokenExpirationTime = DateTime.UtcNow.AddSeconds(responseObject.Value<int>("expires_in"));
-            
-            if (responseObject.ContainsKey("refresh_token"))
+            var tokenResponse = new AuthorizationCodeTokenResponse
             {
-                _refreshToken = responseObject.Value<string>("refresh_token");
-                await SaveRefreshToken(_refreshToken);
-            }
+                AccessToken = responseObject.Value<string>("access_token"),
+                RefreshToken = responseObject.ContainsKey("refresh_token") ? responseObject.Value<string>("refresh_token") : refreshToken,
+                ExpiresIn = responseObject.Value<int>("expires_in"),
+                TokenType = "Bearer",
+                Scope = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
+            };
 
-            return responseObject.Value<string>("access_token");
+            await SaveTokenToFile(tokenResponse);
+
+            return tokenResponse.AccessToken;
         }
         else
         {
@@ -194,5 +205,37 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
     public bool IsUserAuthorized()
     {
         return !string.IsNullOrEmpty(_refreshToken);
+    }
+    
+    public async Task SaveTokenToFile(AuthorizationCodeTokenResponse tokenResponse)
+    {
+        var json = JsonConvert.SerializeObject(tokenResponse);
+        await File.WriteAllTextAsync(_tokenFilePath, json);
+    }
+
+    public AuthorizationCodeTokenResponse LoadTokenFromFile()
+    {
+        if (File.Exists(_tokenFilePath))
+        {
+            var json = File.ReadAllText(_tokenFilePath);
+            return JsonConvert.DeserializeObject<AuthorizationCodeTokenResponse>(json);
+        }
+
+        return null;
+    }
+    
+    public void InitializeSpotifyClient()
+    {
+        var tokenResponse = LoadTokenFromFile();
+
+        var config = SpotifyClientConfig
+            .CreateDefault()
+            .WithAuthenticator(new AuthorizationCodeAuthenticator(
+                _spotifySettings.ClientId,
+                _spotifySettings.ClientSecret,
+                tokenResponse
+            ));
+
+        _spotify = new SpotifyClient(config);
     }
 }
