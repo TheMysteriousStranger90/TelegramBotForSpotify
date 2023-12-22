@@ -19,5 +19,7 @@ public interface ISpotifyAuthorizationService
     void InitializeSpotifyClient();
     AuthorizationCodeTokenResponse LoadTokenFromFile();
     Task SaveTokenToFile(AuthorizationCodeTokenResponse tokenResponse);
+    Task<SpotifyClient> GetSpotifyClientAsync();
+    Task<string> GetUserTokenAsync();
     
 }

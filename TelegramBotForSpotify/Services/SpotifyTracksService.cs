@@ -16,7 +16,7 @@ public class SpotifyTracksService : ISpotifyTracksService
     {
         try
         {
-            var spotifyClient = await _spotify.CreateSpotifyClient();
+            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
             var allTracks = new List<SavedTrack>();
 
             await foreach (var track in spotifyClient.Paginate(await spotifyClient.Library.GetTracks()))
@@ -28,7 +28,7 @@ public class SpotifyTracksService : ISpotifyTracksService
         }
         catch (APIException e)
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine($"Spotify API error: {e.Message}");
             throw;
         }
         catch (Exception e)

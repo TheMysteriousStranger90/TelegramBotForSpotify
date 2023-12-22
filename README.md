@@ -35,7 +35,7 @@ To run this project, you need to create an appsettings.json file in the root dir
   }
 }
 ```
-Replace <Your Spotify Client ID>, <Your Spotify Client Secret>, and <Your Telegram Bot Token> with your actual Spotify Client ID, Spotify Client Secret, and Telegram Bot Token respectively.
+Replace "<Example>" <Your Spotify Client Secret>, and <Your Telegram Bot Token> with your actual Spotify Client ID, Spotify Client Secret, and Telegram Bot Token respectively.
 
 ## Running the Project
 After setting up the appsettings.json file, you can run the project using your preferred .NET Core-compatible IDE or from the command line with the dotnet run command.

@@ -16,7 +16,7 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
     private SpotifyClient _spotify;
     private DateTime _tokenExpirationTime;
     private readonly HttpClient _httpClient;
-    private readonly string _tokenFilePath = Path.Combine("wwwroot", "data", "mytoken.json");
+    private string _tokenFilePath = Path.Combine("wwwroot", "data", "mytoken.json");
 
     public SpotifyAuthorizationService(IOptions<SpotifySettings> spotifySettings)
     {
@@ -53,9 +53,13 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
                 RefreshToken = responseObject.Value<string>("refresh_token"),
                 ExpiresIn = responseObject.Value<int>("expires_in"),
                 TokenType = "Bearer",
-                Scope = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
+                Scope =
+                    "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
             };
 
+            _refreshToken = tokenResponse.RefreshToken;
+
+            _tokenFilePath = GenerateTokenFilePath();
             await SaveTokenToFile(tokenResponse);
 
             return tokenResponse.AccessToken;
@@ -81,7 +85,9 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
         }
 
         var config = SpotifyClientConfig.CreateDefault();
-        var request = new AuthorizationCodeRefreshRequest(_spotifySettings.ClientId, _spotifySettings.ClientSecret, _refreshToken);
+        var request =
+            new AuthorizationCodeRefreshRequest(_spotifySettings.ClientId, _spotifySettings.ClientSecret,
+                _refreshToken);
         var response = await new OAuthClient(config).RequestToken(request);
 
         if (string.IsNullOrEmpty(response.AccessToken))
@@ -103,7 +109,8 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             ["response_type"] = "code",
             ["redirect_uri"] = _spotifySettings.RedirectUri,
             ["state"] = state,
-            ["scope"] = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
+            ["scope"] =
+                "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
         };
 
         var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
@@ -136,11 +143,17 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             var tokenResponse = new AuthorizationCodeTokenResponse
             {
                 AccessToken = responseObject.Value<string>("access_token"),
-                RefreshToken = responseObject.ContainsKey("refresh_token") ? responseObject.Value<string>("refresh_token") : refreshToken,
+                RefreshToken = responseObject.ContainsKey("refresh_token")
+                    ? responseObject.Value<string>("refresh_token")
+                    : refreshToken,
                 ExpiresIn = responseObject.Value<int>("expires_in"),
                 TokenType = "Bearer",
-                Scope = "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
+                Scope =
+                    "user-read-private user-read-email user-library-read user-read-currently-playing user-read-playback-state playlist-read-private"
             };
+
+
+            _refreshToken = tokenResponse.RefreshToken;
 
             await SaveTokenToFile(tokenResponse);
 
@@ -185,45 +198,13 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
     {
         return _spotify;
     }
-    
-    public async Task SaveRefreshToken(string refreshToken)
-    {
-        var json = JsonConvert.SerializeObject(refreshToken);
-        await File.WriteAllTextAsync(Path.Combine("wwwroot", "data", "refresh.json"), json);
-    }
 
-    public async Task LoadRefreshToken()
-    {
-        var filePath = Path.Combine("wwwroot", "data", "refresh.json");
-        if (File.Exists(filePath))
-        {
-            var json = await File.ReadAllTextAsync(filePath);
-            _refreshToken = JsonConvert.DeserializeObject<string>(json);
-        }
-    }
-    
+
     public bool IsUserAuthorized()
     {
         return !string.IsNullOrEmpty(_refreshToken);
     }
-    
-    public async Task SaveTokenToFile(AuthorizationCodeTokenResponse tokenResponse)
-    {
-        var json = JsonConvert.SerializeObject(tokenResponse);
-        await File.WriteAllTextAsync(_tokenFilePath, json);
-    }
 
-    public AuthorizationCodeTokenResponse LoadTokenFromFile()
-    {
-        if (File.Exists(_tokenFilePath))
-        {
-            var json = File.ReadAllText(_tokenFilePath);
-            return JsonConvert.DeserializeObject<AuthorizationCodeTokenResponse>(json);
-        }
-
-        return null;
-    }
-    
     public void InitializeSpotifyClient()
     {
         var tokenResponse = LoadTokenFromFile();
@@ -237,5 +218,82 @@ public class SpotifyAuthorizationService : ISpotifyAuthorizationService
             ));
 
         _spotify = new SpotifyClient(config);
+    }
+
+    public async Task<SpotifyClient> GetSpotifyClientAsync()
+    {
+        if (IsAccessTokenExpired())
+        {
+            var refreshToken = GetRefreshToken();
+            var newAccessToken = await RefreshToken(refreshToken);
+            InitializeSpotifyClient(newAccessToken);
+        }
+
+        return _spotify;
+    }
+
+    public async Task<string> GetUserTokenAsync()
+    {
+        var tokenResponse = LoadTokenFromFile();
+
+        if (tokenResponse == null)
+        {
+            throw new Exception("No token found. Please authorize first.");
+        }
+
+        if (IsAccessTokenExpired())
+        {
+            var newAccessToken = await RefreshToken(tokenResponse.RefreshToken);
+            tokenResponse.AccessToken = newAccessToken;
+            await SaveTokenToFile(tokenResponse);
+        }
+
+        return tokenResponse.AccessToken;
+    }
+
+    public async Task SaveRefreshToken(string refreshToken)
+    {
+        var json = JsonConvert.SerializeObject(refreshToken);
+        await File.WriteAllTextAsync(_tokenFilePath, json);
+    }
+
+    public async Task LoadRefreshToken()
+    {
+        if (File.Exists(_tokenFilePath))
+        {
+            var json = await File.ReadAllTextAsync(_tokenFilePath);
+            _refreshToken = JsonConvert.DeserializeObject<string>(json);
+        }
+    }
+
+    public async Task SaveTokenToFile(AuthorizationCodeTokenResponse tokenResponse)
+    {
+        var tokenData = JsonConvert.SerializeObject(tokenResponse);
+        var directoryPath = Path.GetDirectoryName(_tokenFilePath);
+
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        File.WriteAllText(_tokenFilePath, tokenData);
+    }
+
+    public AuthorizationCodeTokenResponse LoadTokenFromFile()
+    {
+        if (File.Exists(_tokenFilePath))
+        {
+            var json = File.ReadAllText(_tokenFilePath);
+            return JsonConvert.DeserializeObject<AuthorizationCodeTokenResponse>(json);
+        }
+
+        return null;
+    }
+
+    private string GenerateTokenFilePath()
+    {
+        var random = new Random();
+        var randomNumber = random.Next(10000, 99999);
+        return Path.Combine("wwwroot", "data", $"mytoken_{randomNumber}.json");
     }
 }

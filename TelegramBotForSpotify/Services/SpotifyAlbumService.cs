@@ -16,7 +16,7 @@ public class SpotifyAlbumService : ISpotifyAlbumService
     {
         try
         {
-            var spotifyClient = await _spotify.CreateSpotifyClient();
+            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
             var allAlbums = new List<SavedAlbum>();
 
             var firstPage = await spotifyClient.Library.GetAlbums();

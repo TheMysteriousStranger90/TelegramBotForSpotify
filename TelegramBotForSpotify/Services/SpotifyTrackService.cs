@@ -16,7 +16,7 @@ public class SpotifyTrackService : ISpotifyTrackService
     {
         try
         {
-            var spotifyClient = await _spotify.CreateSpotifyClient();
+            var spotifyClient = await _spotify.CreateSpotifyClientAsync();
             var playback = await spotifyClient.Player.GetCurrentPlayback();
             if (playback?.Item is FullTrack track)
             {
@@ -29,12 +29,18 @@ public class SpotifyTrackService : ISpotifyTrackService
         }
         catch (APIException e)
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine($"APIException: {e.Message}");
+            if (e.Response != null)
+            {
+                Console.WriteLine($"Status Code: {e.Response.StatusCode}");
+                Console.WriteLine($"Error: {e.Response.Body.ToString()}");
+                Console.WriteLine($"Error Description: {e.Response.ContentType.ToString()}");
+            }
             throw;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine($"Exception: {e.Message}");
             throw;
         }
     }
