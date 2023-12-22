@@ -4,6 +4,9 @@
 
 This project is a Telegram bot that interacts with the Spotify API to provide various functionalities. The bot can authorize a user, fetch the current track, favorite tracks, favorite albums, and playlist information.
 
+## Note
+Currently, my application is in Developer Mode on the Spotify Developer Dashboard. This means that in order for users to use the application, they need to be manually added by me. If you wish to use my application, please contact me so I can add you to the list of authorized users. I appreciate your understanding and cooperation.
+
 ## Commands
 The bot supports the following commands:
 ```
