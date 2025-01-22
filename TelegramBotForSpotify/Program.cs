@@ -27,6 +27,8 @@ builder.Services.AddSingleton(provider =>
     return new SpotifyClient(token);
 });
 
+//builder.Services.AddSingleton<YouTubeDownloadService>();
+
 builder.Services.AddSingleton<ISpotifyAlbumService, SpotifyAlbumService>();
 builder.Services.AddSingleton<ISpotifyPlaylistService, SpotifyPlaylistService>();
 builder.Services.AddSingleton<ISpotifyTrackService, SpotifyTrackService>();
@@ -39,6 +41,10 @@ builder.Services.AddSingleton<CurrentTrackCommand>();
 builder.Services.AddSingleton<FavoriteAlbumsStatsCommand>();
 builder.Services.AddSingleton<FavoriteTracksCommand>();
 builder.Services.AddSingleton<PlaylistInfoCommand>();
+builder.Services.AddSingleton<ExportFavoriteAlbumsCommand>();
+builder.Services.AddSingleton<ExportFavoriteTracksCommand>();
+builder.Services.AddSingleton<ExportPlaylistsCommand>();
+//builder.Services.AddSingleton<DownloadCurrentTrackCommand>();
 
 // Add CommandHandler to the services
 

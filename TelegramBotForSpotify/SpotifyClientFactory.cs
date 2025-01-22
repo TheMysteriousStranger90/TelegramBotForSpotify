@@ -18,14 +18,6 @@ public class SpotifyClientFactory : ISpotifyClientFactory
 
     public async Task<SpotifyClient> CreateSpotifyClientAsync()
     {
-        //return await _spotifyAuthorizationService.GetSpotifyClientAsync();
-
-        /*
-        var token = await CreateUserTokenAsync();
-        var config = SpotifyClientConfig.CreateDefault().WithToken(token);
-        return new SpotifyClient(config);
-        */
-
         var token = await _spotifyAuthorizationService.GetUserTokenAsync();
 
         if (string.IsNullOrEmpty(token))

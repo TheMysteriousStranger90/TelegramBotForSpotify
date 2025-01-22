@@ -25,6 +25,11 @@ public class CommandHandler
             { "/gettracks", new FavoriteTracksCommand(spotifyTracksService, telegramService) },
             { "/getalbums", new FavoriteAlbumsStatsCommand(spotifyAlbumService, telegramService) },
             { "/getplaylists", new PlaylistInfoCommand(spotifyPlaylistService, telegramService) },
+            { "/exportalbums", new ExportFavoriteAlbumsCommand(spotifyAlbumService, telegramService) },
+            { "/exporttracks", new ExportFavoriteTracksCommand(spotifyTracksService, telegramService) },
+            { "/exportplaylists", new ExportPlaylistsCommand(spotifyPlaylistService, telegramService) },
+            //{ "/download", new DownloadCurrentTrackCommand(spotifyTrackService, telegramService) },
+            { "/start", new HelpCommand(telegramService) },
             { "/help", new HelpCommand(telegramService) }
         };
     }
