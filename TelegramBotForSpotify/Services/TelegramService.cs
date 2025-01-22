@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBotForSpotify.Auth;
 using TelegramBotForSpotify.Commands;
@@ -49,5 +50,23 @@ public class TelegramService : ITelegramService
     {
         var photo = Telegram.Bot.Types.InputFile.FromUri(photoUrl);
         await _botClient.SendPhotoAsync(chatId, photo);
+    }
+    
+    public async Task SendDocumentAsync(string chatId, string filePath, string caption = null)
+    {
+        try
+        {
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var fileName = Path.GetFileName(filePath);
+            await _botClient.SendDocumentAsync(
+                chatId: chatId,
+                document: InputFile.FromStream(stream, fileName),
+                caption: caption
+            );
+        }
+        catch (ApiRequestException e)
+        {
+            Console.WriteLine($"An error occurred while sending document: {e.Message}");
+        }
     }
 }

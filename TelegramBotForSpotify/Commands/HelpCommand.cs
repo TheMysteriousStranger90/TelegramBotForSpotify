@@ -23,6 +23,9 @@ public class HelpCommand : ICommand
                            "/gettracks - Get all your favorite tracks\n" +
                            "/getalbums - Get all your favorite albums\n" +
                            "/getplaylists - Get all your favorite playlists\n" +
+                           "/exportalbums - Export your favorite albums to xml\n" +
+                           "/exporttracks - Export your favorite tracks to xml\n" +
+                           "/exportplaylists - Export your favorite playlists to xml\n" +
                            "/help - Get all available commands";
             await _telegramService.SendMessage(message.Chat.Id.ToString(), text: _message);
         }

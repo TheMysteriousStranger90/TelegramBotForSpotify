@@ -39,6 +39,9 @@ builder.Services.AddSingleton<CurrentTrackCommand>();
 builder.Services.AddSingleton<FavoriteAlbumsStatsCommand>();
 builder.Services.AddSingleton<FavoriteTracksCommand>();
 builder.Services.AddSingleton<PlaylistInfoCommand>();
+builder.Services.AddSingleton<ExportFavoriteAlbumsCommand>();
+builder.Services.AddSingleton<ExportFavoriteTracksCommand>();
+builder.Services.AddSingleton<ExportPlaylistsCommand>();
 
 // Add CommandHandler to the services
 
