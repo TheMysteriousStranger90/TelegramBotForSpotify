@@ -3,6 +3,7 @@
 ![Image 1](Screenshots/Screen1.png)
 
 This project is a Telegram bot that interacts with the Spotify API to provide various functionalities. The bot can authorize a user, fetch the current track, favorite tracks, favorite albums, and playlist information.
+The bot supports XML export functionality for albums, tracks, and playlists, allowing users to save their Spotify data in a structured format for backup or analysis purposes.
 
 ## Note
 Currently, my application is in Developer Mode on the Spotify Developer Dashboard. This means that in order for users to use the application, they need to be manually added by me. If you wish to use my application, please contact me so I can add you to the list of authorized users. I appreciate your understanding and cooperation.
@@ -73,3 +74,10 @@ Bohdan Harabadzhyu
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
+
+## YouTube Review
+<details>
+<summary>📺 Watch Video Review</summary>
+
+[![YouTube](http://i.ytimg.com/vi/3Dr5L2KpDdE/hqdefault.jpg)](https://www.youtube.com/watch?v=3Dr5L2KpDdE)
+</details>
