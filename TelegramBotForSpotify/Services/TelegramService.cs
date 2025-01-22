@@ -69,4 +69,22 @@ public class TelegramService : ITelegramService
             Console.WriteLine($"An error occurred while sending document: {e.Message}");
         }
     }
+    
+    public async Task SendAudioAsync(string chatId, string audioPath, string caption = null)
+    {
+        try
+        {
+            using var stream = new FileStream(audioPath, FileMode.Open, FileAccess.Read);
+            var fileName = Path.GetFileName(audioPath);
+            await _botClient.SendAudioAsync(
+                chatId: chatId,
+                audio: InputFile.FromStream(stream, fileName),
+                caption: caption
+            );
+        }
+        catch (ApiRequestException e)
+        {
+            Console.WriteLine($"An error occurred while sending audio: {e.Message}");
+        }
+    }
 }

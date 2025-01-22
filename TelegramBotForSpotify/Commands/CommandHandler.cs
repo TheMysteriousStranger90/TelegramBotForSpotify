@@ -28,6 +28,7 @@ public class CommandHandler
             { "/exportalbums", new ExportFavoriteAlbumsCommand(spotifyAlbumService, telegramService) },
             { "/exporttracks", new ExportFavoriteTracksCommand(spotifyTracksService, telegramService) },
             { "/exportplaylists", new ExportPlaylistsCommand(spotifyPlaylistService, telegramService) },
+            //{ "/download", new DownloadCurrentTrackCommand(spotifyTrackService, telegramService) },
             { "/start", new HelpCommand(telegramService) },
             { "/help", new HelpCommand(telegramService) }
         };

@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,10 +12,18 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
         <PackageReference Include="SpotifyAPI.Web" Version="7.0.2" />
         <PackageReference Include="Telegram.Bot" Version="19.0.0" />
+        <PackageReference Include="MediaToolkit" Version="1.1.0.1" />
+        <PackageReference Include="VideoLibrary" Version="3.2.6" />
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="wwwroot\data\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
